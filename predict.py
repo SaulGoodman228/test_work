@@ -199,8 +199,8 @@ def detect_and_save_video(
 if __name__ == "__main__":
     # Базовый пример
     detect_and_save_video(
-        input_video_path='crowd.mp4',
-        output_video_path='output_video.mp4',
+        input_video_path='videos/origin/crowd.mp4',
+        output_video_path='videos/predict/output_video.mp4',
         model_name='yolov8n.pt',  # или 'yolov11n.pt'
         conf_threshold=0.5,
         show_fps=True
