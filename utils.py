@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import os
 import pandas as pd
+from PIL import Image
+import PIL
 
 #Параметры нарезки
 video_path = "videos/origin/crowd.mp4"
@@ -9,7 +11,23 @@ output_dir = "videos/frames"
 num_frames = 100
 
 # Нарезчик видео
-def video_cutter(video_path:str,output_dir:str,num_frames:int) -> pd.DataFrame:
+def video_cutter(video_path:str, output_dir:str, num_frames:int,
+                 resize=False, w=640, h=640) -> pd.DataFrame:
+    """
+    Функция случайно выбирает фремы из видео
+
+    :param video_path: путь до видеофайла
+    :param output_dir: вызодной путь для альбома
+    :param num_frames: Сколько изображений должны получить из видео
+
+    #Параметры для скейлера изображения
+    :param resize:
+    :param w:
+    :param h:
+
+    :return: Датафрем pandas, по которому в дальнейшем будем знать с чем сравнивать
+    """
+
     # Создаем папку для кадров
     os.makedirs(output_dir, exist_ok=True)
 
@@ -35,6 +53,9 @@ def video_cutter(video_path:str,output_dir:str,num_frames:int) -> pd.DataFrame:
         if not success:
             continue
 
+        if resize:
+            frame = cv2.resize(frame, (w, h))
+
         filename = f"frame_{i:03d}.jpg"
         filepath = os.path.join(output_dir, filename)
         cv2.imwrite(filepath, frame)
@@ -53,7 +74,12 @@ def video_cutter(video_path:str,output_dir:str,num_frames:int) -> pd.DataFrame:
 
 #Функция открытия видео
 def video_open(video_path:str) -> cv2.VideoCapture:
-    # Открываем видео
+    """
+    Функция для открытия видео
+
+    :param video_path - путь до видео
+    :return: открытое видео
+    """
     cap = cv2.VideoCapture(video_path)
 
     #Проверка есть ли файл
@@ -63,7 +89,7 @@ def video_open(video_path:str) -> cv2.VideoCapture:
     return cap
 
 #Отрисовка определенных объектов на видео с достоверностью.
-def draw_detections(frame, boxes, model, extra_info=None):
+def draw_detections(frame:Image, boxes:list, model, extra_info=None) -> Image:
     """
     Отрисовывает bounding boxes и подписи на кадре.
 
@@ -104,6 +130,7 @@ def draw_detections(frame, boxes, model, extra_info=None):
 
     return frame
 
+
 if __name__ == "__main__":
-    data = video_cutter(video_path,output_dir,num_frames)
+    data = video_cutter(video_path,output_dir,num_frames, resize = True)
     data.to_csv('video_info.csv', index=False)
