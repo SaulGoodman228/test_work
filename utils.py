@@ -5,6 +5,8 @@ import pandas as pd
 from PIL import Image
 import PIL
 
+
+
 #Параметры нарезки
 video_path = "videos/origin/crowd.mp4"
 output_dir = "videos/frames"
@@ -127,7 +129,6 @@ def draw_detections(frame:Image, boxes:list, model, extra_info=None) -> Image:
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
         cv2.putText(frame, f"Progress: {extra_info.get('progress', 0):.1f}%", (10, info_y + 40),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-
     return frame
 
 
