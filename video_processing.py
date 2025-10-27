@@ -73,7 +73,7 @@ def detect_and_save_video(input_video_path: str,
 # ПРИМЕР ИСПОЛЬЗОВАНИЯ
 if __name__ == "__main__":
     # Пример для предобученных моделей
-    models_to_test = 'runs/detect/yolov8n_train8/weights/best.pt'
+    models_to_test = 'runs/detect/yolov8n_train14/weights/best.pt'
     output_name = f"result.mp4"
     print(f"\nТестирование {models_to_test}...")
     detect_and_save_video(
