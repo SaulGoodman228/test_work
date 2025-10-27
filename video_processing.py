@@ -5,11 +5,11 @@ import numpy as np
 import time
 from utils import video_open, draw_detections
 
-
 def detect_and_save_video(input_video_path: str,
                           output_video_path: str,
                           model_name: str,
-                          conf_threshold: float):
+                          conf_threshold: float,
+                          scale_factor: float = 1.0) -> None:
     """
     Детекция людей на видео с отрисовкой bbox и сохранением результата
 
@@ -17,13 +17,14 @@ def detect_and_save_video(input_video_path: str,
     output_video_path - путь для сохранения видео
     model_name - имя используемой модели
     conf_threshold - порог достоверности
+    scale_factor - масштаб видео (0.5 = в 2 раза меньше)
     """
     print(f"Загрузка модели {model_name}...")
     model = YOLO(model_name)
 
     cap = cv2.VideoCapture(input_video_path)
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH) * scale_factor)
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT) * scale_factor)
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
@@ -42,6 +43,10 @@ def detect_and_save_video(input_video_path: str,
         if not ret:
             break
 
+        # Масштабирование кадра
+        if scale_factor != 1.0:
+            frame = cv2.resize(frame, (width, height))
+
         frame_count += 1
         start_time = time.time()
 
@@ -49,7 +54,6 @@ def detect_and_save_video(input_video_path: str,
         boxes = results[0].boxes
         total_detections += len(boxes)
 
-        # Отрисовка через отдельную функцию
         progress = (frame_count / total_frames) * 100
         frame = draw_detections(frame, boxes, model, {
             "people_count": len(boxes),
@@ -70,15 +74,12 @@ def detect_and_save_video(input_video_path: str,
     print(f"Видео сохранено: {output_video_path}")
 
 
-# ПРИМЕР ИСПОЛЬЗОВАНИЯ
+# ИСПОЛЬЗОВАНИЕ
 if __name__ == "__main__":
-    # Пример для предобученных моделей
-    models_to_test = 'yolov8s.pt'
-    output_name = f"result.mp4"
-    print(f"\nТестирование {models_to_test}...")
     detect_and_save_video(
-        input_video_path = 'videos/origin/crowd.mp4',
-        output_video_path = output_name,
-        model_name = models_to_test,
-        conf_threshold=0.3
+        input_video_path='videos/origin/crowd.mp4',
+        output_video_path="result.mp4",
+        model_name='yolov8s.pt',
+        conf_threshold=0.3,
+        scale_factor=0.4
     )

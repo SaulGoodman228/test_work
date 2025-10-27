@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 from dataset import DATASET_PATH
 
-def main():
+def main()->None:
     # Загрузка модели
     model = YOLO("yolov8s.pt")
 
